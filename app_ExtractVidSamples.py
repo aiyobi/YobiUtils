@@ -8,7 +8,6 @@ Steps
 
 """
 
-
 import os, sys
 import glob
 try:    #Python 3
@@ -18,6 +17,12 @@ except (ImportError, ValueError):     # Python 2
 from progressbar import *
 import random
 import hashlib
+
+def verifyPythonVersion():
+    version_info = sys.version_info
+    if not ((version_info.major == 3) and (version_info.minor >=4 )):
+        print("ERROR: This app requies Python Version >=3.4.x. Exiting...")
+        sys.exit(-1)
 
 MAX_DUR = 180.0
 MIN_DUR = 60.0
@@ -128,6 +133,8 @@ def extractClips(FOLDER_INP, FOLDER_OUT):
 
 
 if __name__ == '__main__':
+    verifyPythonVersion()
+    
     if len(sys.argv) != 3:
         print("Correct Usage: {} <inp_folder> <out_folder>. Exiting...".format(sys.argv[0]))
         sys.exit(-1)
