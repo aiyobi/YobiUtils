@@ -16,13 +16,16 @@ Here are the details on how it functions:
 
 #### Setup
 
-*Mac/Linux:*  
+- *Mac/Linux:*  
 
     pip install -r requirements.txt
 
-*Windows:*  
+- *Windows:*  
 
     pip install --user -r requirements.txt
+    
+  - FFMPEG 4.0: [ffmpeg.exe](https://drive.google.com/open?id=13zq41LBPfn_hZ_leoN7hCE91I4XZggZD). Copy to deps/ 
+  - MediaInfo 17.10: [MediaInfo.exe](https://drive.google.com/open?id=1_mpxoGD9bAlC5nwEFFzXKaqiiO-jTW0H) [LIBCURL.DLL](https://drive.google.com/open?id=1PabjHoEgpQ_OQK6ysBnghK5CZmMwpQoP). Copy to deps/
 
 
 #### Usage
