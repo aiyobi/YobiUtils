@@ -18,6 +18,14 @@ from progressbar import *
 import random
 import hashlib
 
+
+def setupPaths():
+    if os.name == 'nt':
+        depsFolder = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'deps')
+        # print (depsFolder)
+        os.environ['PATH'] = depsFolder + ";" + os.environ['PATH']
+    return
+
 def verifyPythonVersion():
     version_info = sys.version_info
     if not ((version_info.major == 3) and (version_info.minor >=4 )):
@@ -160,6 +168,7 @@ if __name__ == '__main__':
         print("ERROR: Output folder should not exist inside input folder. Exiting...")
         sys.exit(-1)
 
+    setupPaths()
     extractClips(FOLDER_INP, FOLDER_OUT)
 
 
