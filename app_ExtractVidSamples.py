@@ -49,7 +49,8 @@ def extractClips(FOLDER_INP, FOLDER_OUT):
         pth = glob.escape(x[0])
         for y in glob.glob(os.path.join(pth, '*.*')):
             #print (y)
-            fileListAll.append(y)
+            if (os.path.isfile(y)):
+                fileListAll.append(y)
 
     # print("Full File List")
     # print("\n".join(fileListAll))
@@ -77,7 +78,8 @@ def extractClips(FOLDER_INP, FOLDER_OUT):
     tmpCount = 0
     for (ind, file_name) in enumerate(fileListAll):
 
-        widgets[3] = FormatLabel('{0}/{1} ] <{2}>'.format(tmpCount, ind, file_name))
+        # widgets[3] = FormatLabel('{0}/{1} ] <{2}>'.format(tmpCount, ind, file_name))
+        widgets[3] = FormatLabel('{0}/{1} ] '.format(tmpCount, ind))
         bar.update(ind)
         cmd = 'mediainfo --Inform="Video;%Duration%" "' + file_name + '"'
         cmd_out = getoutput(cmd)
@@ -100,7 +102,8 @@ def extractClips(FOLDER_INP, FOLDER_OUT):
 
     bar2.start()
     for (ind,(vid_file, dur)) in enumerate(zip(filesVid, durVid)):
-        widgets[3] = FormatLabel('{0}/{1} ] <{2}>'.format(ind, totalFilesVid, vid_file))
+        # widgets[3] = FormatLabel('{0}/{1} ] <{2}>'.format(ind, totalFilesVid, vid_file))
+        widgets[3] = FormatLabel('{0}/{1} ] '.format(ind, totalFilesVid))
         bar2.update(ind)
         OUT_DUR = random.randint(MIN_DUR*10,MAX_DUR*10)/10.0
         LASTPOSSIBLE_START_POS = dur - OUT_DUR;
