@@ -16,7 +16,13 @@ Here are the details on how it functions:
 
 #### Setup
 
-pip install -r requirements.txt
+*Mac/Linux:*  
+
+    pip install -r requirements.txt
+
+*Windows:*  
+
+    pip install --user -r requirements.txt
 
 
 #### Usage
