@@ -41,16 +41,51 @@ def randomWord(length):
     return ''.join(random.choice(letters) for i in range(length))
 
 
-def extractClips(FOLDER_INP, FOLDER_OUT):
+def getFullFileList2(FOLDER_INP):
+    fileListAll = []
+    list_dirs = [FOLDER_INP]
+    handled_dirs = []
+
+    while len(list_dirs) != 0:
+        curr_dir = list_dirs.pop(0)
+        curr_dir = os.path.realpath(curr_dir)
+        curr_dir = glob.escape(curr_dir)
+        if curr_dir not in handled_dirs:
+            for y in glob.glob(os.path.join(curr_dir, '*')):
+                if os.path.isfile(y):
+                    fileListAll.append(y)
+                elif os.path.isdir(y):
+                    y_realpath = os.path.realpath(y)
+                    if y_realpath not in handled_dirs:
+                        list_dirs.append(y_realpath)
+                        print("FOUND DIRECTORY: {}".format(y_realpath))
+                else:
+                    print("STRANGE SITUATION: FILE IS NEITHER A FILE, NOR DIRECTORY. IGNORING")
+            handled_dirs.append(curr_dir)
+
+    return fileListAll
+
+
+# NOTE: Below method was failing on NTFS drive on a MAC
+def getFullFileList1(FOLDER_INP):
     fileListAll = []
     # fileList = [y for x in os.walk(FOLDER_INP) for y in glob(os.path.join(x[0], '*.*'))]
+
     for x in os.walk(FOLDER_INP):
         #print("DIR: {}".format(x))
-        pth = glob.escape(x[0])
+        root_fold = x[0]
+        sub_folds = x[1]
+        sub_files = x[2]
+        pth = glob.escape(root_fold)
         for y in glob.glob(os.path.join(pth, '*.*')):
             #print (y)
             if (os.path.isfile(y)):
                 fileListAll.append(y)
+
+    return fileListAll
+
+def extractClips(FOLDER_INP, FOLDER_OUT):
+    fileListAll = getFullFileList1(FOLDER_INP)
 
     # print("Full File List")
     # print("\n".join(fileListAll))
@@ -126,7 +161,8 @@ def extractClips(FOLDER_INP, FOLDER_OUT):
         # cmd += '-vcodec copy -acodec copy -map 0:v -map 0:a:2 -avoid_negative_ts 1 '
         cmd += '-vcodec copy -acodec copy -map 0 -avoid_negative_ts 1 '
         cmd += ' "' + out_file + '" '
-
+        # print("Processing file: {}".format(vid_file))
+        # print(cmd)
         ret = os.system(cmd)
 
         if ret == 0:
