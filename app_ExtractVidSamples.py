@@ -3,14 +3,13 @@
 """
 Steps
 - Get list of all files
-- Check if it's a video file, by querying for 
-- If it's a video file, try to extract part of it. (Duration: 30 sec to 3 min, ). 
+- Check if it's a video file, by querying for
+- If it's a video file, try to extract part of it. (Duration: 30 sec to 3 min).
 
 """
-
 import os, sys
 import glob
-try:    #Python 3
+try:    # Python 3
     from subprocess import getoutput
 except (ImportError, ValueError):     # Python 2
     from commands import getoutput
@@ -26,14 +25,17 @@ def setupPaths():
         os.environ['PATH'] = depsFolder + ";" + os.environ['PATH']
     return
 
+
 def verifyPythonVersion():
     version_info = sys.version_info
-    if not ((version_info.major == 3) and (version_info.minor >=4 )):
+    if not ((version_info.major == 3) and (version_info.minor >= 4)):
         print("ERROR: This app requies Python Version >=3.4.x. Exiting...")
         sys.exit(-1)
 
+
 MAX_DUR = 180.0
 MIN_DUR = 60.0
+
 
 def randomWord(length):
     # Ref: https://stackoverflow.com/questions/2030053/random-strings-in-python
@@ -72,17 +74,18 @@ def getFullFileList1(FOLDER_INP):
     # fileList = [y for x in os.walk(FOLDER_INP) for y in glob(os.path.join(x[0], '*.*'))]
 
     for x in os.walk(FOLDER_INP):
-        #print("DIR: {}".format(x))
+        # print("DIR: {}".format(x))
         root_fold = x[0]
         sub_folds = x[1]
         sub_files = x[2]
         pth = glob.escape(root_fold)
         for y in glob.glob(os.path.join(pth, '*.*')):
-            #print (y)
+            # print (y)
             if (os.path.isfile(y)):
                 fileListAll.append(y)
 
     return fileListAll
+
 
 def extractClips(FOLDER_INP, FOLDER_OUT):
     fileListAll = getFullFileList1(FOLDER_INP)
@@ -100,7 +103,7 @@ def extractClips(FOLDER_INP, FOLDER_OUT):
     filesVidFailed = []
 
     print()
-    print("(1) TOTAL NUMBER OF FILES: {}".format(countFileListAll) )
+    print("(1) TOTAL NUMBER OF FILES: {}".format(countFileListAll))
 
     print()
     print("(2) FIND COUNT OF PROBABLE VIDEO FILES")
@@ -120,7 +123,7 @@ def extractClips(FOLDER_INP, FOLDER_OUT):
         cmd_out = getoutput(cmd)
         if cmd_out != "":
             filesVid.append(file_name)
-            dur_sec = float(cmd_out)/1000.0
+            dur_sec = float(cmd_out) / 1000.0
             durVid.append(dur_sec)
             tmpCount += 1
         else:
@@ -129,30 +132,29 @@ def extractClips(FOLDER_INP, FOLDER_OUT):
     bar.finish()
     print()
 
-
     totalFilesVid = len(filesVid)
     bar2 = ProgressBar(maxval=len(filesVid), widgets=widgets)
 
     print("(3): EXTRACTING SEGMENTS FROM VIDEO FILES")
 
     bar2.start()
-    for (ind,(vid_file, dur)) in enumerate(zip(filesVid, durVid)):
+    for (ind, (vid_file, dur)) in enumerate(zip(filesVid, durVid)):
         # widgets[3] = FormatLabel('{0}/{1} ] <{2}>'.format(ind, totalFilesVid, vid_file))
         widgets[3] = FormatLabel('{0}/{1} ] '.format(ind, totalFilesVid))
         bar2.update(ind)
-        OUT_DUR = random.randint(MIN_DUR*10,MAX_DUR*10)/10.0
-        LASTPOSSIBLE_START_POS = dur - OUT_DUR;
+        OUT_DUR = random.randint((MIN_DUR * 10), (MAX_DUR * 10)) / 10.0
+        LASTPOSSIBLE_START_POS = dur - OUT_DUR
         if LASTPOSSIBLE_START_POS < 0.0:
             LASTPOSSIBLE_START_POS = 0.0
 
-        START_POS = random.randint(0, int(LASTPOSSIBLE_START_POS*100.0))/100.0
+        START_POS = random.randint(0, int(LASTPOSSIBLE_START_POS * 100.0)) / 100.0
 
         unique_hash_code = hashlib.md5(str.encode(vid_file)).hexdigest()
         tmp = os.path.splitext(os.path.basename(vid_file))
         new_filename = tmp[0] + "_" + unique_hash_code + tmp[1]
         out_file = os.path.join(FOLDER_OUT, new_filename)
         # ffmpeg -ss 5  -i /Volumes/dataDrive/work/yobi/data/samples/Sherlock.S04E01.The.Six.Thatchers.HDTV.x264-ORGANiC[ettv].mkv -t 5 -vcodec copy -acodec copy out.mkv
-        #  ffmpeg -ss 5  -i /Volumes/dataDrive/work/yobi/data/samples/Sherlock.S04E01.The.Six.Thatchers.HDTV.x264-ORGANiC[ettv].mkv -t 1000 -vcodec copy -acodec copy -avoid_negative_ts 1 out.mkv
+        # ffmpeg -ss 5  -i /Volumes/dataDrive/work/yobi/data/samples/Sherlock.S04E01.The.Six.Thatchers.HDTV.x264-ORGANiC[ettv].mkv -t 1000 -vcodec copy -acodec copy -avoid_negative_ts 1 out.mkv
         cmd = 'ffmpeg -y -loglevel fatal '
         cmd += '-ss ' + str(START_POS) + ' '
         cmd += '-i "' + vid_file + '" '
@@ -172,16 +174,14 @@ def extractClips(FOLDER_INP, FOLDER_OUT):
             pass
     bar2.finish()
 
-    
     print()
     print("List of failed files: ")
     print("\n".join(filesVidFailed))
 
 
-
 if __name__ == '__main__':
     verifyPythonVersion()
-    
+
     if len(sys.argv) != 3:
         print("Correct Usage: {} <inp_folder> <out_folder>. Exiting...".format(sys.argv[0]))
         sys.exit(-1)
@@ -209,5 +209,3 @@ if __name__ == '__main__':
 
     setupPaths()
     extractClips(FOLDER_INP, FOLDER_OUT)
-
-
